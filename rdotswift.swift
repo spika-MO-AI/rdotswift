@@ -34,9 +34,9 @@ private final class RdotSwift {
     private var imageVariableNames: [String] = []
     
     // MARK: Initialize
-
+    
     private init (fileName: String, resourceClass: String, globalInstanceName: String, searchPath: String) {
-
+        
         self.globalInstanceName = globalInstanceName
         
         var pathArray = self.retrievePathArray(searchPath) as [String]
@@ -44,12 +44,13 @@ private final class RdotSwift {
         var imageNames: [String] = []
         imageNames = pathArray.filter { path in
             contains(self.imageExtensions) { ext in path.hasSuffix(ext) }
-        }.map { imageName in
-            var ignoreWords = self.imageExtensions + self.imageIgnoreMark
-            return ignoreWords.reduce(imageName) { name, ignoreWord in
-                name.stringByReplacingOccurrencesOfString(ignoreWord, withString:"", options: nil, range: nil)
-            }
+            }.map { imageName in
+                var ignoreWords = self.imageExtensions + self.imageIgnoreMark
+                return ignoreWords.reduce(imageName) { name, ignoreWord in
+                    name.stringByReplacingOccurrencesOfString(ignoreWord, withString:"", options: nil, range: nil)
+                }
         }
+        imageNames = NSOrderedSet(array:(imageNames as NSArray)).array as [String]
         
         imageVariableNames = imageNames.map { imageName in
             self.variableNameForbiddenWords.reduce(imageName) { name, forbiddenWord in
@@ -63,6 +64,8 @@ private final class RdotSwift {
         }
         var rdotswift = self.rdotswiftTemplete(resourceClass, instanceName:globalInstanceName, contents:imageMethods)
         rdotswift.writeToFile(fileName, atomically: true, encoding: NSUTF8StringEncoding, error: nil)
+        
+        println(rdotswift)
         
         self.attachFile(fileName)
     }
@@ -101,9 +104,9 @@ private final class RdotSwift {
     private func rdotswiftTemplete(className: String, instanceName: String, contents: String)->String {
         return
             "public final class \(className) {\n\n" +
-            "\(contents)" +
-            "}\n\n" +
-            "let \(instanceName) = \(className)()\n"
+                "\(contents)" +
+                "}\n\n" +
+        "let \(instanceName) = \(className)()\n"
     }
     
     private func drawbleTemplete(fileName: String, variableName: String)->String {
