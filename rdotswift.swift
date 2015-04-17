@@ -62,12 +62,12 @@ private final class RdotSwift {
         for idx in 0..<imageNames.count {
             imageMethods += "\(self.drawbleTemplete(imageNames[idx], variableName:imageVariableNames[idx]))\n\n"
         }
+        
+        self.attachFile(fileName)
         var rdotswift = self.rdotswiftTemplete(resourceClass, instanceName:globalInstanceName, contents:imageMethods)
         rdotswift.writeToFile(fileName, atomically: true, encoding: NSUTF8StringEncoding, error: nil)
         
         println(rdotswift)
-        
-        self.attachFile(fileName)
     }
     
     // MARK: File management
