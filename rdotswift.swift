@@ -19,8 +19,6 @@ private final class RdotSwift {
     
     //    private let fileName: String
     
-    private let resourceClass: String
-    
     private let globalInstanceName: String
     
     // MARK: Private property
@@ -31,34 +29,40 @@ private final class RdotSwift {
     
     private let imageIgnoreMark: [String] = ["@2x", "@3x"]
     
-    private let variableNameForbiddenWords: [String] = ["-", "@"]
-    
-    private var imageNames: [String] = []
+    private let variableNameForbiddenWords: [String] = ["+", "-", "*", "/", "@", " ", "."]
     
     private var imageVariableNames: [String] = []
     
     // MARK: Initialize
-    
+
     private init (fileName: String, resourceClass: String, globalInstanceName: String, searchPath: String) {
-        self.resourceClass = resourceClass
+
         self.globalInstanceName = globalInstanceName
         
         var pathArray = self.retrievePathArray(searchPath) as [String]
         
-        self.imageNames = pathArray.filter { path in
+        var imageNames: [String] = []
+        imageNames = pathArray.filter { path in
             contains(self.imageExtensions) { ext in path.hasSuffix(ext) }
         }.map { imageName in
-            var ignoreWords = self.imageExtensions + self.variableNameForbiddenWords
+            var ignoreWords = self.imageExtensions + self.imageIgnoreMark
             return ignoreWords.reduce(imageName) { name, ignoreWord in
                 name.stringByReplacingOccurrencesOfString(ignoreWord, withString:"", options: nil, range: nil)
             }
         }
         
-        self.imageVariableNames = self.imageNames.map { imageName in
+        imageVariableNames = imageNames.map { imageName in
             self.variableNameForbiddenWords.reduce(imageName) { name, forbiddenWord in
                 name.stringByReplacingOccurrencesOfString(forbiddenWord, withString:"$", options: nil, range: nil)
             }
         }
+        
+        var imageMethods = "// MARK: Drawble\n\n"
+        for idx in 0..<imageNames.count {
+            imageMethods += "\(self.drawbleTemplete(imageNames[idx], variableName:imageVariableNames[idx]))\n\n"
+        }
+        var rdotswift = self.rdotswiftTemplete(resourceClass, instanceName:globalInstanceName, contents:imageMethods)
+        rdotswift.writeToFile(fileName, atomically: true, encoding: NSUTF8StringEncoding, error: nil)
         
         self.attachFile(fileName)
     }
@@ -113,7 +117,3 @@ RdotSwift(
     globalInstanceName: rdotswiftGlobalInstanceName,
     searchPath: rdotswiftResourceSearchPath)
 
-//var imageMethods:String = ""
-//for var i = 0, n = ImageNames.count ; i < n ; i++ {
-//    imageMethods += "public var \(ImageVariableName[i]): UIImage { get { return UIImage(named:\"\(ImageNames[i])\")!} }\n\n"
-//}
