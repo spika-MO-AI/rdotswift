@@ -1,8 +1,0 @@
-
-import Foundation
-
-for arg in Process.arguments {
-    println("\(arg)")
-    println(NSTask().currentDirectoryPath)
-}
-
