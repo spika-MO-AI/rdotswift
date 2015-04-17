@@ -96,14 +96,14 @@ private final class RdotSwift {
     
     private func rdotswiftTemplete(className: String, instanceName: String, contents: String)->String {
         return
-        "public final class \(className) {\n\n" +
-        "\(contents)" +
-        "}\n\n" +
-        "let \(instanceName) = \(className)()\n"
+            "public final class \(className) {\n\n" +
+            "\(contents)" +
+            "}\n\n" +
+            "let \(instanceName) = \(className)()\n"
     }
     
     private func drawbleTemplete(fileName: String, variableName: String)->String {
-        return "public var \(fileName): UIImage! { get { return UIImage(named:\"\(variableName)\")! } }"
+        return "public var \(variableName): UIImage! { get { return UIImage(named:\"\(fileName)\")! } }"
     }
 }
 
